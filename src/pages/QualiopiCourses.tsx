@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Clock, Users, BookOpen, ChevronRight, Target, Award, CheckCircle, ArrowRight, ChevronDown, ChevronUp, Download } from 'lucide-react';
+import { ChevronRight, Clock, Users, Calendar, BookOpen, CheckCircle, Award, ChevronDown, ChevronUp, Download, Target } from 'lucide-react';
 import SectionTitle from '../components/SectionTitle';
 import Button from '../components/Button';
 import jsPDF from 'jspdf';
@@ -54,6 +54,7 @@ interface CourseDetailProps {
     }[];
     prerequisites: string[];
     evaluation: string[];
+    tools?: string[];
     project?: {
       title: string;
       description: string;
@@ -182,6 +183,19 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isOpen, onClose, course }) 
         yPos += addWrappedText(`• ${item}`, margin, yPos, contentWidth - 10);
       });
 
+      // Tools section if available
+      if (course.tools && course.tools.length > 0) {
+        if (yPos > 250) {
+          doc.addPage();
+          yPos = 20;
+        }
+        
+        addSectionTitle('Outils Utilisés');
+        course.tools.forEach(tool => {
+          yPos += addWrappedText(`• ${tool}`, margin, yPos, contentWidth - 10);
+        });
+      }
+
       // Project section if available
       if (course.project) {
         if (yPos > 250) {
@@ -303,7 +317,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isOpen, onClose, course }) 
                       <ul className="space-y-2">
                         {day.morning.map((item, idx) => (
                           <li key={idx} className="flex items-start">
-                            <ArrowRight className="w-4 h-4 text-blue-500 mr-2 flex-shrink-0 mt-1" />
+                            <ChevronRight className="w-4 h-4 text-blue-500 mr-2 flex-shrink-0 mt-1" />
                             <span>{item}</span>
                           </li>
                         ))}
@@ -314,7 +328,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isOpen, onClose, course }) 
                       <ul className="space-y-2">
                         {day.afternoon.map((item, idx) => (
                           <li key={idx} className="flex items-start">
-                            <ArrowRight className="w-4 h-4 text-blue-500 mr-2 flex-shrink-0 mt-1" />
+                            <ChevronRight className="w-4 h-4 text-blue-500 mr-2 flex-shrink-0 mt-1" />
                             <span>{item}</span>
                           </li>
                         ))}
@@ -339,6 +353,22 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isOpen, onClose, course }) 
               ))}
             </ul>
           </ExpandableSection>
+
+          {course.tools && (
+            <ExpandableSection
+              title="Outils Utilisés"
+              icon={<BookOpen className="w-6 h-6 text-blue-600" />}
+            >
+              <ul className="space-y-2">
+                {course.tools.map((tool, index) => (
+                  <li key={index} className="flex items-start">
+                    <CheckCircle className="w-5 h-5 text-blue-500 mr-2 flex-shrink-0 mt-0.5" />
+                    <span>{tool}</span>
+                  </li>
+                ))}
+              </ul>
+            </ExpandableSection>
+          )}
 
           {course.project && (
             <ExpandableSection
@@ -378,7 +408,7 @@ const QualiopiCourses: React.FC = () => {
 
   const courses = [
     {
-      title: "Parcours 'Découverte Light' (1 jour)",
+      title: "Parcours 'Découverte' (1 jour)",
       duration: "1 jour (7 heures)",
       level: "Débutant",
       image: "https://images.pexels.com/photos/8566472/pexels-photo-8566472.jpeg",
@@ -391,33 +421,33 @@ const QualiopiCourses: React.FC = () => {
       ],
       program: [
         {
-          day: "Matinée : Fondamentaux de l'IA (3h30)",
+          day: "Matinée : Découverte des Outils IA (9h00-12h30)",
           morning: [
             "Introduction aux concepts clés de l'IA générative",
-            "Panorama des technologies accessibles aux non-techniciens",
-            "Cas d'usage concrets dans différents secteurs d'activité",
-            "Enjeux éthiques et limites à connaître"
+            "Présentation des principaux outils IA (ChatGPT, Claude, Gemini)",
+            "Démonstration des capacités et limites des outils",
+            "Cas d'usage concrets par secteur d'activité"
           ],
           afternoon: [
-            "Premiers pas avec ChatGPT Lite",
-            "Création d'images simples avec DALL-E Mini",
-            "Initiation à Gamma pour les présentations",
-            "Exercices guidés sur chaque outil"
+            "Prise en main de ChatGPT et Perplexity",
+            "Techniques de base de prompt engineering",
+            "Création de contenu assistée par IA",
+            "Automatisation de tâches simples"
           ]
         },
         {
-          day: "Après-midi : Mise en Pratique Guidée (3h30)",
+          day: "Après-midi : Applications Pratiques (13h30-17h00)",
           morning: [
-            "Rédaction assistée de courriels professionnels",
-            "Création de résumés automatiques de documents",
-            "Analyse de données simples avec l'IA",
-            "Création de templates réutilisables"
+            "Atelier pratique : rédaction assistée par IA",
+            "Création de visuels avec DALL-E et Midjourney",
+            "Recherche avancée avec Perplexity",
+            "Utilisation de Gamma pour les présentations"
           ],
           afternoon: [
-            "Conception d'une présentation professionnelle avec Gamma",
-            "Génération d'illustrations personnalisées",
-            "Création d'un mini-projet adapté au secteur d'activité",
-            "Évaluation et feedback sur les réalisations"
+            "Projet personnel : création d'un assistant IA personnalisé",
+            "Mise en place de templates réutilisables",
+            "Évaluation des acquis et feedback",
+            "Plan d'action personnel pour intégrer l'IA au quotidien"
           ]
         }
       ],
@@ -427,17 +457,19 @@ const QualiopiCourses: React.FC = () => {
         "Curiosité pour l'IA et ses applications",
         "Volonté d'apprendre et d'expérimenter"
       ],
-      targetAudience: [
-        "Professionnels souhaitant découvrir l'IA",
-        "Managers et décideurs",
-        "Entrepreneurs et porteurs de projets",
-        "Toute personne intéressée par l'IA et son impact"
-      ],
       evaluation: [
         "Mini-projet final avec grille d'auto-évaluation",
         "Évaluation continue pendant les ateliers pratiques",
         "Présentation des réalisations en fin de journée",
         "Accès 30 jours aux ressources + session Q&R à J+15"
+      ],
+      tools: [
+        "ChatGPT (OpenAI)",
+        "Claude (Anthropic)",
+        "Gemini (Google)",
+        "Perplexity (Recherche augmentée)",
+        "DALL-E / Midjourney (Génération d'images)",
+        "Gamma (Présentations)"
       ],
       project: {
         title: "Assistant Personnel de Productivité",
@@ -459,220 +491,197 @@ const QualiopiCourses: React.FC = () => {
       }
     },
     {
-      title: "Fondamentaux de l'IA et Outils Pratiques",
-      duration: "3 jours (21 heures)",
+      title: "Parcours 'IA Débutant + Automatisation' (2 jours)",
+      duration: "2 jours (14 heures)",
       level: "Débutant",
       image: "https://images.pexels.com/photos/8867482/pexels-photo-8867482.jpeg",
-      shortDescription: "Une formation complète pour maîtriser les bases de l'IA et ses applications pratiques en entreprise.",
+      shortDescription: "Maîtrisez les fondamentaux de l'IA et apprenez à automatiser vos tâches quotidiennes pour gagner en productivité.",
       objectives: [
-        "Comprendre les concepts fondamentaux de l'IA",
-        "Maîtriser les outils IA grand public",
-        "Développer des compétences en prompt engineering",
-        "Automatiser des tâches quotidiennes avec l'IA"
+        "Maîtriser les concepts fondamentaux de l'IA générative",
+        "Développer des compétences avancées en prompt engineering",
+        "Créer des workflows d'automatisation simples",
+        "Intégrer l'IA dans ses outils professionnels quotidiens"
       ],
       program: [
         {
-          day: "Jour 1: Introduction à l'IA et Premiers Pas",
+          day: "JOUR 1 - Maîtrise des Fondamentaux (9h00-17h00)",
           morning: [
-            "Présentation des concepts fondamentaux de l'IA",
-            "Panorama des technologies d'IA générative",
-            "Comprendre les modèles de langage (LLM)",
-            "Atelier pratique: Première prise en main de ChatGPT"
+            "Introduction aux modèles de langage (LLM) et à l'IA générative",
+            "Panorama des outils IA : ChatGPT, Claude, Gemini, Perplexity",
+            "Principes fondamentaux du prompt engineering",
+            "Atelier pratique : création de prompts efficaces"
           ],
           afternoon: [
-            "Introduction au prompt engineering",
-            "Techniques de base pour formuler des requêtes efficaces",
-            "Cas d'usage professionnels simples",
-            "Exercices pratiques: Rédaction assistée et génération de contenu"
-          ]
-        },
-        {
-          day: "Jour 2: Prompt Engineering et Applications Métier",
-          morning: [
             "Techniques avancées de prompt engineering",
             "Création de templates pour tâches récurrentes",
-            "Génération d'images avec DALL·E 3",
-            "Atelier: Création de visuels pour présentations"
-          ],
-          afternoon: [
-            "Applications sectorielles (marketing, RH, finance...)",
-            "Création de présentations avec Gamma",
-            "Amélioration de textes avec DeepL Write",
-            "Exercices pratiques: Automatisation de tâches quotidiennes"
+            "Génération de contenu multimédia (texte, images, présentations)",
+            "Projet guidé : assistant IA personnalisé"
           ]
         },
         {
-          day: "Jour 3: Intégration de l'IA et Projet Final",
+          day: "JOUR 2 - Application Métier et Workflows Avancés (9h00-17h00)",
           morning: [
-            "Intégration des outils IA dans le workflow quotidien",
-            "Bonnes pratiques et limites éthiques",
-            "Sécurité et confidentialité des données",
-            "Atelier: Création d'un assistant IA personnalisé"
+            "Intégration de l'IA dans les outils bureautiques",
+            "Automatisation de tâches avec NotebookLM",
+            "Création de workflows simples avec n8n",
+            "Atelier pratique : automatisation d'une chaîne de traitement"
           ],
           afternoon: [
-            "Projet final: Mise en place d'un cas d'usage complet",
+            "Applications sectorielles (marketing, RH, finance, etc.)",
+            "Création d'un projet d'automatisation personnalisé",
             "Présentation des projets et feedback",
-            "Évaluation des acquis",
-            "Plan d'action personnel et ressources complémentaires"
+            "Plan d'action pour l'implémentation en entreprise"
           ]
         }
       ],
       prerequisites: [
         "Aucun prérequis technique spécifique",
-        "Maîtrise basique de l'outil informatique",
-        "Curiosité pour l'IA et ses applications"
-      ],
-      targetAudience: [
-        "Professionnels souhaitant s'initier à l'IA",
-        "Managers et décideurs",
-        "Chefs de projets",
-        "Toute personne souhaitant comprendre et utiliser l'IA"
+        "Maîtrise des outils bureautiques de base",
+        "Intérêt pour l'automatisation des tâches",
+        "Volonté d'optimiser ses processus de travail"
       ],
       evaluation: [
-        "Évaluation continue pendant la formation",
-        "Projet pratique final",
-        "QCM de validation des acquis",
-        "Présentation du cas d'usage développé"
+        "Projet d'automatisation évalué sur critères fonctionnels",
+        "Évaluation continue pendant les ateliers",
+        "QCM de validation des connaissances théoriques",
+        "Présentation du projet final devant le groupe"
+      ],
+      tools: [
+        "ChatGPT (OpenAI)",
+        "Claude (Anthropic)",
+        "Gemini (Google)",
+        "Perplexity (Recherche augmentée)",
+        "NotebookLM (Google)",
+        "n8n (Automatisation de workflows)"
       ],
       project: {
-        title: "Fondamentaux des Outils IA Grand Public",
-        description: "Maîtrisez les outils IA accessibles sans compétences techniques pour une intégration immédiate dans votre quotidien professionnel.",
+        title: "Workflow d'Automatisation Personnalisé",
+        description: "Création d'un workflow d'automatisation adapté à votre métier, intégrant plusieurs outils IA pour optimiser un processus spécifique.",
         components: [
           {
-            name: "ChatGPT (OpenAI)",
-            description: "Assistant IA conversationnel pour la rédaction, la recherche et l'automatisation de tâches textuelles"
+            name: "Analyse de processus",
+            description: "Identification et documentation d'un processus métier à optimiser avec cartographie des tâches automatisables"
           },
           {
-            name: "DALL·E 3",
-            description: "Générateur d'images IA capable de créer des visuels détaillés à partir de descriptions textuelles"
+            name: "Chaîne d'automatisation",
+            description: "Mise en place d'un workflow avec n8n intégrant au moins deux outils IA différents pour automatiser le processus identifié"
           },
           {
-            name: "Gamma",
-            description: "Plateforme de création de présentations et documents assistée par IA"
+            name: "Documentation technique",
+            description: "Guide d'utilisation et de maintenance du workflow pour permettre son déploiement et son évolution"
           },
           {
-            name: "DeepL Write",
-            description: "Outil d'amélioration et de réécriture de textes avec suggestions stylistiques et grammaticales"
+            name: "Présentation des résultats",
+            description: "Démonstration du workflow et analyse des gains de productivité estimés (temps, qualité, coûts)"
           }
         ]
       }
     },
     {
-      title: "Solutions IA Personnalisées",
-      duration: "4 jours (28 heures)",
+      title: "Parcours 'IA Intermédiaire' (3 jours)",
+      duration: "3 jours (21 heures)",
       level: "Intermédiaire",
       image: "https://images.pexels.com/photos/8566535/pexels-photo-8566535.jpeg",
-      shortDescription: "Apprenez à créer des solutions IA sur mesure et à les intégrer dans votre environnement professionnel.",
+      shortDescription: "Développez des compétences avancées en IA et créez des agents métier pour automatiser des workflows complexes.",
       objectives: [
-        "Concevoir des solutions IA personnalisées",
-        "Maîtriser les outils d'automatisation avancés",
-        "Intégrer l'IA dans les processus métier",
-        "Développer des workflows IA efficaces"
+        "Maîtriser les techniques avancées de prompt engineering",
+        "Créer et orchestrer des agents IA spécialisés",
+        "Développer des workflows métier complexes",
+        "Intégrer l'IA dans les processus d'entreprise existants"
       ],
       program: [
         {
-          day: "Jour 1: Concepts Avancés et Personnalisation",
+          day: "JOUR 1 - Prompt Engineering Avancé et Orchestration (9h00-17h00)",
           morning: [
-            "Approfondissement des modèles de langage avancés",
-            "Comparaison des différents modèles (GPT-4, Mistral, Claude)",
-            "Techniques avancées de prompt engineering",
-            "Atelier: Création de prompts complexes multi-étapes"
+            "Techniques avancées de prompt engineering (chaînage, few-shot learning)",
+            "Création de personas IA spécialisés",
+            "Principes d'orchestration d'agents IA",
+            "Atelier pratique : conception d'agents spécialisés"
           ],
           afternoon: [
-            "Personnalisation des modèles pour besoins spécifiques",
-            "Fine-tuning et adaptation au contexte métier",
-            "Création d'assistants IA spécialisés",
-            "Exercices pratiques: Configuration d'assistants personnalisés"
+            "Introduction à LangChain pour l'orchestration",
+            "Création d'agents avec mémoire et contexte",
+            "Intégration de sources de données externes",
+            "Projet guidé : orchestrateur multi-agents"
           ]
         },
         {
-          day: "Jour 2: Automatisation et Intégration",
+          day: "JOUR 2 - Agents Métier et Workflows Complexes (9h00-17h00)",
           morning: [
-            "Introduction à LangChain pour l'orchestration d'IA",
-            "Création de chaînes de traitement automatisées",
-            "Intégration avec des sources de données externes",
-            "Atelier: Construction d'un workflow automatisé"
+            "Conception d'agents métier spécialisés",
+            "Techniques de RAG (Retrieval Augmented Generation)",
+            "Intégration de bases de connaissances privées",
+            "Atelier pratique : agent avec mémoire d'entreprise"
           ],
           afternoon: [
-            "Intégration avec les outils métier existants",
-            "Connexion aux API d'IA (OpenAI, Mistral, etc.)",
-            "Bases de données vectorielles avec Pinecone",
-            "Exercices pratiques: Création d'une application simple"
+            "Création de workflows métier complexes",
+            "Automatisation de processus multi-étapes",
+            "Gestion des erreurs et des exceptions",
+            "Projet guidé : workflow métier complet"
           ]
         },
         {
-          day: "Jour 3: Applications Sectorielles et No-Code",
+          day: "JOUR 3 - Optimisation et Déploiement (9h00-17h00)",
           morning: [
-            "Solutions IA spécifiques par secteur d'activité",
-            "Études de cas réels et retours d'expérience",
-            "Création de vidéos IA avec Synthesia",
-            "Atelier: Production de contenu multimédia avancé"
+            "Optimisation des performances des agents IA",
+            "Techniques d'évaluation et de test",
+            "Sécurité et confidentialité des données",
+            "Atelier pratique : optimisation d'un workflow existant"
           ],
           afternoon: [
-            "Plateformes no-code pour l'IA",
-            "Création d'applications sans programmation",
-            "Intégration de Mistral Large 2 dans les workflows",
-            "Exercices pratiques: Développement d'une solution no-code"
-          ]
-        },
-        {
-          day: "Jour 4: Projet Intégré et Évaluation",
-          morning: [
-            "Conception d'un projet complet",
-            "Développement de la solution",
-            "Tests et optimisation",
-            "Préparation de la présentation"
-          ],
-          afternoon: [
-            "Finalisation du projet",
-            "Présentation des réalisations",
-            "Évaluation et feedback",
-            "Plan d'implémentation en entreprise"
+            "Finalisation du projet d'intégration",
+            "Présentation des projets et feedback",
+            "Stratégies de déploiement en entreprise",
+            "Plan d'action pour l'implémentation"
           ]
         }
       ],
       prerequisites: [
-        "Connaissance des concepts de base de l'IA",
+        "Connaissance de base des concepts d'IA générative",
         "Expérience avec les outils IA grand public",
-        "Compréhension des enjeux métier"
-      ],
-      targetAudience: [
-        "Professionnels ayant déjà une expérience en IA",
-        "Chefs de projets techniques",
-        "Développeurs et intégrateurs",
-        "Consultants en transformation digitale"
+        "Compréhension des processus métier de son organisation",
+        "Intérêt pour l'automatisation avancée"
       ],
       evaluation: [
-        "Évaluation continue des exercices pratiques",
-        "Projet d'intégration complet",
-        "Présentation finale devant le groupe",
-        "Évaluation des compétences techniques acquises"
+        "Projet d'intégration évalué sur critères fonctionnels et techniques",
+        "Évaluation continue pendant les ateliers",
+        "Présentation du projet final avec démonstration",
+        "Rapport d'analyse des gains potentiels"
+      ],
+      tools: [
+        "ChatGPT (OpenAI) avec plugins",
+        "Claude (Anthropic)",
+        "Gemini (Google)",
+        "LangChain (Orchestration)",
+        "n8n (Automatisation avancée)",
+        "NotebookLM (Google)",
+        "Bases de connaissances personnalisées"
       ],
       project: {
-        title: "Automatisation et Solutions Sectorielles",
-        description: "Développez des workflows IA automatisés et des solutions personnalisées pour votre secteur d'activité.",
+        title: "Système d'Agents Métier Orchestrés",
+        description: "Développement d'un système d'agents IA spécialisés et orchestrés pour automatiser un processus métier complexe de votre organisation.",
         components: [
           {
-            name: "LangChain",
-            description: "Framework pour développer des applications utilisant des LLM avec orchestration de chaînes de traitement"
+            name: "Architecture multi-agents",
+            description: "Conception et implémentation d'un système comprenant au moins trois agents spécialisés (recherche, analyse, synthèse, etc.) travaillant ensemble"
           },
           {
-            name: "Pinecone",
-            description: "Base de données vectorielle pour stocker et rechercher des embeddings, facilitant la recherche sémantique"
+            name: "Orchestrateur central",
+            description: "Développement d'un orchestrateur utilisant LangChain pour coordonner les agents et gérer le flux de travail global"
           },
           {
-            name: "Synthesia",
-            description: "Plateforme de création vidéo IA permettant de générer des présentateurs virtuels à partir de scripts"
+            name: "Intégration de données métier",
+            description: "Connexion à au moins une source de données externe (documents, API, base de données) pour enrichir les capacités des agents"
           },
           {
-            name: "Mistral Large 2",
-            description: "Modèle de langage avancé offrant des performances de pointe pour des tâches complexes"
+            name: "Interface utilisateur simple",
+            description: "Création d'une interface minimaliste permettant aux utilisateurs d'interagir avec le système d'agents"
           }
         ]
       }
     },
     {
-      title: "Développement Avancé et Déploiement de Solutions IA",
+      title: "Parcours 'IA Expert' (5 jours)",
       duration: "5 jours (35 heures)",
       level: "Expert",
       image: "https://images.pexels.com/photos/8566770/pexels-photo-8566770.jpeg",
@@ -681,122 +690,125 @@ const QualiopiCourses: React.FC = () => {
         "Maîtriser les architectures IA avancées",
         "Développer des systèmes IA complexes",
         "Déployer des solutions en production",
-        "Gérer et optimiser les performances"
+        "Former et transférer les compétences"
       ],
       program: [
         {
-          day: "Jour 1: Ingénierie des Systèmes IA et LangChain",
+          day: "JOUR 1 - Architecture Système et APIs Avancées (9h00-17h00)",
           morning: [
-            "Architecture avancée des systèmes IA",
-            "Modèles de dernière génération (OpenAI o3/o4-mini)",
-            "Principes d'ingénierie des systèmes IA robustes",
-            "Atelier: Conception d'architecture IA évolutive"
+            "Architecture des systèmes IA modernes",
+            "Principes de conception d'agents autonomes",
+            "Intégration d'APIs IA avancées",
+            "Atelier pratique : conception d'architecture évolutive"
           ],
           afternoon: [
-            "LangChain avancé: agents et outils",
-            "Création d'agents autonomes",
-            "Orchestration de workflows complexes",
-            "Exercices pratiques: Développement d'agents spécialisés"
+            "Développement avec les APIs OpenAI, Anthropic et Google",
+            "Techniques d'optimisation des requêtes",
+            "Gestion des coûts et des quotas",
+            "Projet guidé : système multi-modèles"
           ]
         },
         {
-          day: "Jour 2: Retrieval Augmented Generation (RAG)",
+          day: "JOUR 2 - Développement de Copilots Métier (9h00-17h00)",
           morning: [
-            "Principes fondamentaux du RAG",
-            "Création d'embeddings et vectorisation",
-            "Bases de données vectorielles avancées (Weaviate)",
-            "Atelier: Implémentation d'un système RAG de base"
+            "Conception de copilots IA spécialisés",
+            "Techniques avancées de RAG",
+            "Intégration de bases de connaissances volumineuses",
+            "Atelier pratique : copilot avec mémoire à long terme"
           ],
           afternoon: [
-            "RAG avancé: techniques d'optimisation",
-            "Intégration de sources de données hétérogènes",
-            "Évaluation et amélioration des réponses",
-            "Exercices pratiques: RAG sur documents d'entreprise"
+            "Développement d'interfaces conversationnelles avancées",
+            "Gestion du contexte et de l'historique",
+            "Techniques de fine-tuning et d'adaptation",
+            "Projet guidé : copilot métier spécialisé"
           ]
         },
         {
-          day: "Jour 3: Développement No-Code Avancé et API",
+          day: "JOUR 3 - Agents Autonomes et Prise de Décision (9h00-17h00)",
           morning: [
-            "Plateformes no-code avancées pour l'IA",
-            "Intégration de modèles personnalisés",
-            "Création d'interfaces utilisateur sophistiquées",
-            "Atelier: Développement d'une application métier complète"
+            "Conception d'agents autonomes",
+            "Techniques de raisonnement et de planification",
+            "Intégration d'outils et d'actions",
+            "Atelier pratique : agent avec capacités de raisonnement"
           ],
           afternoon: [
-            "Conception et développement d'API IA",
-            "Intégration avec DeepSeek R1 et Amazon Nova Pro",
-            "Sécurisation des API et gestion des accès",
-            "Exercices pratiques: Création d'une API IA complète"
+            "Systèmes multi-agents collaboratifs",
+            "Mécanismes de prise de décision",
+            "Évaluation et amélioration des performances",
+            "Projet guidé : système d'agents collaboratifs"
           ]
         },
         {
-          day: "Jour 4: Déploiement et Monitoring",
+          day: "JOUR 4 - Déploiement et Production (9h00-17h00)",
           morning: [
             "Stratégies de déploiement de solutions IA",
-            "Infrastructure cloud pour l'IA",
-            "Optimisation des performances et des coûts",
-            "Atelier: Déploiement d'une solution IA en production"
+            "Architectures cloud pour l'IA",
+            "Monitoring et observabilité",
+            "Atelier pratique : mise en place d'un pipeline de déploiement"
           ],
           afternoon: [
-            "Monitoring et observabilité des systèmes IA",
-            "Détection et gestion des dérives",
-            "Mise en place de tableaux de bord analytiques",
-            "Exercices pratiques: Configuration du monitoring"
+            "Optimisation des performances en production",
+            "Gestion des versions et des modèles",
+            "Sécurité et conformité",
+            "Projet guidé : déploiement d'une solution complète"
           ]
         },
         {
-          day: "Jour 5: Projet Final et Évaluation",
+          day: "JOUR 5 - Formation et Transfert de Compétences (9h00-17h00)",
           morning: [
-            "Finalisation du projet d'entreprise",
-            "Tests de performance et optimisation",
-            "Préparation de la documentation",
-            "Revue de code et bonnes pratiques"
+            "Conception de programmes de formation IA",
+            "Techniques de transfert de compétences",
+            "Documentation technique et fonctionnelle",
+            "Atelier pratique : création de matériel de formation"
           ],
           afternoon: [
-            "Présentation des projets",
-            "Évaluation technique approfondie",
-            "Feedback et recommandations",
-            "Plan de déploiement en production"
+            "Finalisation et présentation des projets",
+            "Évaluation des compétences acquises",
+            "Plan de déploiement et d'adoption",
+            "Stratégie d'évolution et de maintenance"
           ]
         }
       ],
       prerequisites: [
-        "Expérience significative en développement IA",
-        "Maîtrise des concepts d'automatisation",
-        "Connaissance des architectures cloud",
-        "Compréhension des enjeux de production"
-      ],
-      targetAudience: [
-        "Architectes solutions",
-        "Développeurs seniors",
-        "Tech leads",
-        "Experts en IA souhaitant se perfectionner"
+        "Expérience préalable avec les technologies d'IA générative",
+        "Connaissance des principes d'automatisation",
+        "Compréhension des enjeux métier et techniques",
+        "Capacité à gérer des projets complexes"
       ],
       evaluation: [
-        "Évaluation continue des travaux pratiques",
-        "Projet technique complet",
-        "Soutenance technique détaillée",
-        "Évaluation des compétences d'architecture et de déploiement"
+        "Projet complet évalué sur critères techniques et fonctionnels",
+        "Évaluation continue pendant les ateliers",
+        "Présentation finale avec démonstration",
+        "Plan de déploiement et de transfert de compétences"
+      ],
+      tools: [
+        "APIs OpenAI (GPT-4, DALL-E)",
+        "APIs Anthropic (Claude)",
+        "APIs Google (Gemini)",
+        "LangChain et LangChain.js",
+        "Frameworks d'agents autonomes",
+        "Outils de RAG avancés",
+        "Plateformes de déploiement cloud"
       ],
       project: {
-        title: "Déploiement de Solutions IA Entreprise",
-        description: "Concevez et déployez des systèmes IA complexes en production avec une approche entreprise.",
+        title: "Solution IA Entreprise Complète",
+        description: "Développement d'une solution IA complète pour un cas d'usage entreprise, de la conception au déploiement et au transfert de compétences.",
         components: [
           {
-            name: "OpenAI o3/o4-mini",
-            description: "Dernière génération de modèles OpenAI offrant des capacités de raisonnement et de génération avancées"
+            name: "Architecture système",
+            description: "Conception détaillée de l'architecture technique, incluant les composants IA, les intégrations et les flux de données"
           },
           {
-            name: "Weaviate",
-            description: "Base de données vectorielle open-source avec capacités avancées de recherche sémantique et de filtrage"
+            name: "Système d'agents spécialisés",
+            description: "Développement d'un ensemble d'agents IA autonomes et collaboratifs adaptés à un cas d'usage métier spécifique"
           },
           {
-            name: "DeepSeek R1",
-            description: "Modèle spécialisé dans le raisonnement et la résolution de problèmes complexes"
+            name: "Pipeline de déploiement",
+            description: "Mise en place d'un pipeline complet pour le déploiement, le monitoring et la maintenance de la solution"
           },
           {
-            name: "Amazon Nova Pro",
-            description: "Suite d'outils IA d'entreprise pour le déploiement et la gestion de solutions IA à grande échelle"
+            name: "Programme de formation",
+            description: "Création d'un programme de formation et de transfert de compétences pour les équipes internes"
           }
         ]
       }
@@ -812,7 +824,7 @@ const QualiopiCourses: React.FC = () => {
           centered={true}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mt-12">
           {courses.map((course, index) => (
             <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
               <div className="relative h-48">
@@ -866,6 +878,152 @@ const QualiopiCourses: React.FC = () => {
             course={courses[selectedCourse]}
           />
         )}
+
+        {/* Récapitulatif des parcours */}
+        <div className="mt-16 bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-bold text-center mb-8">Récapitulatif des Parcours et Progression</h2>
+          
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Parcours
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Durée
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Niveau
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Focus
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Outils principaux
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                        <span className="text-green-600 font-bold">1</span>
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900">Parcours Découverte</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    1 jour
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                      Débutant
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    Initiation et applications immédiates
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    ChatGPT, Claude, Perplexity
+                  </td>
+                </tr>
+                <tr className="bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <span className="text-blue-600 font-bold">2</span>
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900">IA Débutant + Automatisation</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    2 jours
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                      Débutant+
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    Automatisation et workflows simples
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    ChatGPT, NotebookLM, n8n
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
+                        <span className="text-orange-600 font-bold">3</span>
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900">IA Intermédiaire</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    3 jours
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
+                      Intermédiaire
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    Agents métier et workflows complexes
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    LangChain, APIs IA, RAG
+                  </td>
+                </tr>
+                <tr className="bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
+                        <span className="text-red-600 font-bold">4</span>
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900">IA Expert</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    5 jours
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                      Expert
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    Solutions complètes et transfert de compétences
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    APIs avancées, déploiement, formation
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div className="mt-8 text-center">
+            <p className="text-gray-600 mb-6">
+              Tous nos parcours sont certifiés Qualiopi et éligibles aux financements OPCO et CPF. Chaque niveau intègre et approfondit les compétences du niveau précédent.
+            </p>
+            <Link to="/contact">
+              <Button variant="primary" size="lg">
+                Demander un devis personnalisé
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
